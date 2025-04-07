@@ -6,6 +6,11 @@ executors:
       - image: google/cloud-sdk:latest
     working_directory: ~/repo
 
+  docker-executor:
+    docker:
+      - image: cimg/base:stable
+    working_directory: ~/repo
+
 jobs:
   checkout_code:
     executor: docker-executor
