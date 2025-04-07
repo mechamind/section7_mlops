@@ -1,0 +1,7 @@
+venv_section7/
+Section7_MLOPs_Project.egg-info/
+logs/
+gcp-key.json
+*.pyc
+__pycache__/
+.DS_Store

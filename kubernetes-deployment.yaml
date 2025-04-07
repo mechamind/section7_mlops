@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: section7-mlops
+  namespace: default
+  labels:
+    app: section7-mlops
+spec:
+  replicas: 2 # kubernetes manage traffics using pods
+  selector:
+    matchLabels:
+      app: section7-mlops
+  template:
+    metadata:
+      labels:
+        app: section7-mlops
+    spec:
+      containers:
+      - name: section7-mlops
+        # To get your Google Container Registry path:
+        # 1. Go to Google Cloud Console
+        # 2. Navigate to Container Registry
+        # 3. Your path will be in the format: gcr.io/[PROJECT-ID]/[IMAGE-NAME]:[TAG]
+        # Replace the image path below with your actual GCR path
+        image: us-central1-docker.pkg.dev/unicare-455503/section7-mlops/section7-mlops:latest
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+      serviceAccountName: default
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: section7-mlops-service
+  namespace: default
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  selector:
+    app: section7-mlops
+  ports:
+  - port: 80
+    targetPort: 5000
+    protocol: TCP
+  type: LoadBalancer
